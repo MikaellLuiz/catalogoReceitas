@@ -1,0 +1,551 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "API Receitas Apocalípticas",
+		"description": "Collection completa para testar a API de Receitas Apocalípticas com todos os endpoints CRUD para receitas, ingredientes e relacionamentos.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "📋 Informações da API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🍽️ RECEITAS",
+			"item": [
+				{
+					"name": "Listar todas as receitas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/receita",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter receita específica",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/receita/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar nova receita",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Sopa de Sobrevivência\",\n    \"descricao\": \"Uma sopa nutritiva para tempos difíceis, feita com ingredientes não perecíveis\",\n    \"dificuldade\": \"Fácil\",\n    \"tempo_preparo\": 30\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receita",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar receita",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Sopa do Apocalipse Atualizada\",\n    \"descricao\": \"Descrição atualizada da receita com mais detalhes\",\n    \"dificuldade\": \"Média\",\n    \"tempo_preparo\": 45\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receita/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir receita",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/receita/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🥕 INGREDIENTES",
+			"item": [
+				{
+					"name": "Listar todos os ingredientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ingrediente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ingrediente"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter ingrediente específico",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ingrediente/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ingrediente",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar novo ingrediente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Cebola Desidratada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ingrediente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ingrediente"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar ingrediente",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Cebola Fresca\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ingrediente/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ingrediente",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir ingrediente",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ingrediente/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ingrediente",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔗 RECEITA-INGREDIENTE",
+			"item": [
+				{
+					"name": "Listar ingredientes de uma receita",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/receita/1/ingredientes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"1",
+								"ingredientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adicionar ingrediente à receita",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ingrediente_id\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receita/1/ingredientes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"1",
+								"ingredientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remover ingrediente da receita",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/receita/1/ingredientes/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"1",
+								"ingredientes",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🧪 TESTES DE VALIDAÇÃO",
+			"item": [
+				{
+					"name": "❌ Criar receita com dificuldade inválida",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Receita Teste\",\n    \"descricao\": \"Teste de validação\",\n    \"dificuldade\": \"Impossível\",\n    \"tempo_preparo\": 30\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receita",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Criar receita com tempo inválido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Receita Teste\",\n    \"descricao\": \"Teste de validação\",\n    \"dificuldade\": \"Fácil\",\n    \"tempo_preparo\": -10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receita",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Criar ingrediente sem nome",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ingrediente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ingrediente"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Buscar receita inexistente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/receita/999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"999"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🚀 WORKFLOW COMPLETO",
+			"item": [
+				{
+					"name": "1️⃣ Criar ingrediente base",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Tomate Enlatado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ingrediente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ingrediente"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2️⃣ Criar receita completa",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Pasta do Sobrevivente\",\n    \"descricao\": \"Pasta rápida e nutritiva para momentos de emergência. Feita com ingredientes de longa duração.\",\n    \"dificuldade\": \"Fácil\",\n    \"tempo_preparo\": 15\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receita",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3️⃣ Vincular ingrediente à receita",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ingrediente_id\": 13\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receita/5/ingredientes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"5",
+								"ingredientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4️⃣ Verificar receita com ingredientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/receita/5/ingredientes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita",
+								"5",
+								"ingredientes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

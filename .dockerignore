@@ -1,0 +1,70 @@
+# Arquivos e diretórios a serem ignorados no build Docker
+
+# Git
+.git
+.gitignore
+
+# Documentação de desenvolvimento
+*.md
+!README.md
+curl-examples.md
+IMPLEMENTATION_SUMMARY.md
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Docker files (evitar recursão)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Diretórios de desenvolvimento
+node_modules/
+vendor/
+.vscode/
+.idea/
+
+# Arquivos de backup
+*.bak
+*.backup
+*~
+
+# Arquivos de configuração local
+.env.local
+.env.development
+config.local.php
+*~
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-*
+
+# Node modules (se houver)
+node_modules/
+npm-debug.log
+
+# Composer (se houver)
+vendor/
+composer.lock
+
+# Arquivos de backup
+*.bak
+*.backup
+
+# Arquivos de configuração local
+config.local.php
+.env.local
+
+# Logs
+logs/
+*.log
