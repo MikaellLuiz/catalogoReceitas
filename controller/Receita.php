@@ -6,7 +6,9 @@ use service\ReceitaService;
 class Receita {
     
     public function __construct() {
-    }    public function listar() {
+    }  
+      
+    public function listar() {
         $service = new ReceitaService();
         
         // Se há ID na URL, buscar receita específica
@@ -17,7 +19,9 @@ class Receita {
         }
         
         return $resultado;
-    }    public function inserir() {
+    }   
+
+    public function inserir() {
         $service = new ReceitaService();
         
         // Obter dados do corpo da requisição
@@ -108,25 +112,22 @@ class Receita {
         
         $resultado = $service->listarIngredientesPorReceita($receita_id);
         return $resultado;
-    }    private function obterDadosRequisicao() {
+    }    
+    
+    private function obterDadosRequisicao() {
         $input = file_get_contents('php://input');
         
-        // Tentar corrigir problemas de codificação UTF-8
         if (!mb_check_encoding($input, 'UTF-8')) {
-            // Se não é UTF-8 válido, tentar converter de ISO-8859-1 para UTF-8
             $input = mb_convert_encoding($input, 'UTF-8', 'ISO-8859-1');
         }
         
         $dados = json_decode($input, true);
         
-        // Se ainda falhou, tentar outras estratégias
         if ($dados === null && json_last_error() !== JSON_ERROR_NONE) {
-            // Tentar limpar caracteres não UTF-8
             $input = mb_convert_encoding($input, 'UTF-8', 'UTF-8');
             $dados = json_decode($input, true);
         }
         
-        // Se não conseguiu decodificar JSON, tentar form data
         if ($dados === null) {
             $dados = $_POST;
         }

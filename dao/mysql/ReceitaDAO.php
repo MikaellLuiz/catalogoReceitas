@@ -7,7 +7,7 @@ use generic\MysqlFactory;
 class ReceitaDAO extends MysqlFactory implements IReceitaDAO {
     
     public function listar() {
-        $sql = "SELECT id, titulo, descricao, dificuldade, tempo_preparo FROM receitas ORDER BY titulo";
+        $sql = "SELECT id, titulo, descricao, dificuldade, tempo_preparo FROM receitas ORDER BY id";
         $retorno = $this->banco->executar($sql);
         return $retorno;
     }

@@ -38,6 +38,16 @@ CREATE TABLE receita_ingrediente (
     FOREIGN KEY (ingrediente_id) REFERENCES ingredientes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Limpeza de dados existentes (remover todos os dados das tabelas)
+-- A ordem é importante devido às chaves estrangeiras
+DELETE FROM receita_ingrediente;
+DELETE FROM receitas;
+DELETE FROM ingredientes;
+
+-- Resetar AUTO_INCREMENT para começar do ID 1
+ALTER TABLE receitas AUTO_INCREMENT = 1;
+ALTER TABLE ingredientes AUTO_INCREMENT = 1;
+
 -- Inserção de dados de exemplo
 INSERT INTO receitas (titulo, descricao, dificuldade, tempo_preparo) VALUES
 ('Sopa do Fim do Mundo', 'Uma sopa nutritiva feita com ingredientes não perecíveis, perfeita para sobreviventes do apocalipse.', 'Fácil', 30),

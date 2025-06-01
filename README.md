@@ -50,7 +50,6 @@ A arquitetura segue rigorosamente o padrão **Model-View-Controller (MVC)** com 
 - **Localização:** `/generic/`
 - **Funcionalidades:** Roteamento, conexão com banco, autoloading, respostas padronizadas
 
-```
 ## 📁 Estrutura do Projeto
 
 ```
@@ -92,7 +91,6 @@ catalogoReceitas/
 ├── Receitas_API_Postman_Collection.json    # 📋 Coleção Postman
 ├── Receitas_API_Environment.postman_environment.json # 🌍 Ambiente Postman
 └── README.md              # 📚 Esta documentação
-```
 ```
 
 ### Tecnologias Utilizadas
