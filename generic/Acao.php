@@ -13,52 +13,32 @@ class Acao
     const PATCH = "PATCH";
     const DELETE = "DELETE";
 
-    private $endpoint;
+    private $endpoints;
 
-    public function __construct($endpoint = [])
+    public function __construct($endpoints)
     {
-       
-        $this->endpoint = $endpoint;
-    }    public function executar()
-    {
-        $end = $this->endpointMetodo();
-       
-        if ($end) {
-            $reflectMetodo = new ReflectionMethod($end->classe, $end->execucao);
-            $parametros = $reflectMetodo->getParameters();
-            
-            // Para métodos POST, PUT, DELETE, deixa o controller processar os dados
-            $metodo = $_SERVER["REQUEST_METHOD"];
-            if (in_array($metodo, ['POST', 'PUT', 'DELETE']) || empty($parametros)) {
-                return $reflectMetodo->invoke(new $end->classe());
-            }
-            
-            // Para métodos GET com parâmetros, usa o processamento automático
-            $returnParam = $this->getParam();
-            $para = [];
-            
-            foreach($parametros as $v) {
-                $name = $v->getName();
-                
-                if (!isset($returnParam[$name]) && !$v->isOptional()) {
-                    return [
-                        'erro' => "Parâmetro obrigatório '$name' não fornecido",
-                        'parametros_esperados' => array_map(function($p) { return $p->getName(); }, $parametros)
-                    ];
-                }
-                
-                $para[$name] = $returnParam[$name] ?? ($v->isOptional() ? $v->getDefaultValue() : null);
-            }
+        $this->endpoints = $endpoints;
+    }
 
-            return $reflectMetodo->invokeArgs(new $end->classe(), $para);
+    public function executar()
+    {
+        $metodo = $_SERVER['REQUEST_METHOD'];
+
+        if (!isset($this->endpoints[$metodo])) {
+            throw new \Exception("Método não permitido", 405);
         }
-        
-        return null;
+
+        $endpoint = $this->endpoints[$metodo];
+        $controller = "controller\\" . $endpoint->getController();
+        $metodo = $endpoint->getMetodo();
+
+        $instancia = new $controller();
+        return $instancia->$metodo();
     }
 
     private function endpointMetodo()
     {
-        return isset($this->endpoint[$_SERVER["REQUEST_METHOD"]]) ? $this->endpoint[$_SERVER["REQUEST_METHOD"]] : null;
+        return isset($this->endpoints[$_SERVER["REQUEST_METHOD"]]) ? $this->endpoints[$_SERVER["REQUEST_METHOD"]] : null;
     }
 
     private function getPost(){

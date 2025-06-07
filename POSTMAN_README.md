@@ -122,3 +122,136 @@ Todos os endpoints POST/PUT já estão configurados com:
 ## 📞 Suporte
 
 Para mais informações sobre a API, execute o endpoint de informações da API que retorna a documentação completa dos endpoints disponíveis.
+
+# Guia de Uso da API no Postman
+
+## Configuração Inicial
+
+1. Importe os arquivos no Postman:
+   - `Receitas_API_Postman_Collection.json`
+   - `Receitas_API_Environment.postman_environment.json`
+
+2. Selecione o ambiente "API Receitas Apocalípticas" no seletor de ambientes do Postman
+
+## Autenticação
+
+1. A API utiliza autenticação JWT (JSON Web Token)
+2. Para obter um token:
+   - Execute a requisição "Login" na pasta "🔐 AUTENTICAÇÃO"
+   - Use as credenciais:
+     ```json
+     {
+         "email": "teste@email.com",
+         "senha": "teste123"
+     }
+     ```
+   - O token será automaticamente salvo na variável de ambiente `token`
+   - O token tem validade de 1 hora
+
+3. Todas as requisições (exceto login e informações da API) requerem o token no header:
+   ```
+   Authorization: Bearer {{token}}
+   ```
+
+## Estrutura da Collection
+
+### 🔐 AUTENTICAÇÃO
+- **Login**: Autenticação e obtenção do token JWT
+
+### 📋 Informações da API
+- **GET /**: Informações gerais sobre a API
+
+### 🍽️ RECEITAS
+- **GET /receita**: Listar todas as receitas
+- **GET /receita/{id}**: Obter receita específica
+- **POST /receita**: Criar nova receita
+- **PUT /receita/{id}**: Atualizar receita
+- **DELETE /receita/{id}**: Excluir receita
+
+### 🥕 INGREDIENTES
+- **GET /ingrediente**: Listar todos os ingredientes
+- **GET /ingrediente/{id}**: Obter ingrediente específico
+- **POST /ingrediente**: Criar novo ingrediente
+- **PUT /ingrediente/{id}**: Atualizar ingrediente
+- **DELETE /ingrediente/{id}**: Excluir ingrediente
+
+### 🔗 RECEITA-INGREDIENTE
+- **GET /receita/{id}/ingredientes**: Listar ingredientes de uma receita
+- **POST /receita/{id}/ingredientes**: Adicionar ingrediente à receita
+- **DELETE /receita/{id}/ingredientes/{ingrediente_id}**: Remover ingrediente da receita
+
+## Exemplos de Uso
+
+1. **Login e Obtenção do Token**:
+   ```http
+   POST http://localhost:8080/login
+   Content-Type: application/json
+
+   {
+       "email": "teste@email.com",
+       "senha": "teste123"
+   }
+   ```
+
+2. **Criar Nova Receita**:
+   ```http
+   POST http://localhost:8080/receita
+   Authorization: Bearer {{token}}
+   Content-Type: application/json
+
+   {
+       "titulo": "Sopa de Sobrevivência",
+       "descricao": "Uma sopa nutritiva para tempos difíceis",
+       "dificuldade": "Fácil",
+       "tempo_preparo": 30
+   }
+   ```
+
+3. **Adicionar Ingrediente à Receita**:
+   ```http
+   POST http://localhost:8080/receita/1/ingredientes
+   Authorization: Bearer {{token}}
+   Content-Type: application/json
+
+   {
+       "ingrediente_id": 1,
+       "quantidade": "2 unidades"
+   }
+   ```
+
+## Tratamento de Erros
+
+A API retorna mensagens de erro em formato JSON:
+
+1. **Erro de Autenticação (401)**:
+   ```json
+   {
+       "error": true,
+       "message": "Acesso não autorizado: Token não fornecido"
+   }
+   ```
+
+2. **Erro de Validação (400)**:
+   ```json
+   {
+       "error": true,
+       "message": "Dados inválidos: [detalhes do erro]"
+   }
+   ```
+
+3. **Erro Interno (500)**:
+   ```json
+   {
+       "error": true,
+       "message": "Erro interno do servidor: [mensagem genérica]"
+   }
+   ```
+
+## Dicas de Uso
+
+1. Sempre execute o login primeiro para obter o token
+2. O token é automaticamente gerenciado pelo Postman
+3. Se receber erro 401, faça login novamente
+4. Use o ambiente correto para garantir que as variáveis funcionem
+5. Verifique os headers antes de enviar requisições
+6. Mantenha o Content-Type como application/json para requisições com corpo

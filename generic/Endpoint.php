@@ -4,12 +4,22 @@ namespace generic;
 
 class Endpoint
 {
-    public $classe;
-    public $execucao;
+    private $controller;
+    private $metodo;
 
-    public function __construct($classe, $execucao)
+    public function __construct($controller, $metodo)
     {
-        $this->classe = "controller\\" . $classe;
-        $this->execucao = $execucao;
+        $this->controller = $controller;
+        $this->metodo = $metodo;
+    }
+
+    public function getController()
+    {
+        return $this->controller;
+    }
+
+    public function getMetodo()
+    {
+        return $this->metodo;
     }
 }

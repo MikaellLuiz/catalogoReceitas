@@ -38,15 +38,27 @@ CREATE TABLE receita_ingrediente (
     FOREIGN KEY (ingrediente_id) REFERENCES ingredientes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Criação da tabela de usuários
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Limpeza de dados existentes (remover todos os dados das tabelas)
 -- A ordem é importante devido às chaves estrangeiras
 DELETE FROM receita_ingrediente;
 DELETE FROM receitas;
 DELETE FROM ingredientes;
+DELETE FROM usuarios;
 
 -- Resetar AUTO_INCREMENT para começar do ID 1
 ALTER TABLE receitas AUTO_INCREMENT = 1;
 ALTER TABLE ingredientes AUTO_INCREMENT = 1;
+ALTER TABLE usuarios AUTO_INCREMENT = 1;
 
 -- Inserção de dados de exemplo
 INSERT INTO receitas (titulo, descricao, dificuldade, tempo_preparo) VALUES
@@ -140,6 +152,10 @@ INSERT INTO receita_ingrediente (receita_id, ingrediente_id, quantidade) VALUES
 (9, 18, '2 pimentas'), -- Pimenta Sedutora
 (9, 8, '3 colheres'), -- Óleo
 (9, 5, 'a gosto'); -- Sal
+
+-- Inserir um usuário administrador padrão (senha: admin123)
+INSERT INTO usuarios (nome, email, senha) VALUES 
+('Administrador', 'admin@email.com', '$2y$12$tPMpKRitc390YreO8ttQ4OeRPaD0mNNoM1D2sCAVOTXd2KD1aQu8q');
 
 -- Verificação dos dados inseridos
 SELECT 'Receitas criadas:' as info;

@@ -6,28 +6,28 @@ use PDOException;
 use Exception;
 
 class MysqlSingleton{
-    private static  $instance = null;    private $conexao = null;
+    private static  $instance = null;    private $conn;
     private $dsn;
     private $usuario;
     private $senha;    private function __construct(){
         // Configuração para Docker/Ambiente
-        $host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: 'db';
-        $dbname = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?: 'receitas_apocalipticas';
-        $user = $_ENV['DB_USER'] ?? getenv('DB_USER') ?: 'receitas_user';
-        $pass = $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?: 'receitas123';
-          $this->dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
+        $host = getenv('DB_HOST') ?: 'mysql';
+        $dbname = getenv('DB_NAME') ?: 'receitas_apocalipticas';
+        $user = getenv('DB_USER') ?: 'root';
+        $pass = getenv('DB_PASS') ?: 'root';
+          $this->dsn = "mysql:host={$host};dbname={$dbname};charset=utf8";
         $this->usuario = $user;
         $this->senha = $pass;
         
-        if($this->conexao == null){
+        if($this->conn == null){
             try {
-                $this->conexao = new PDO($this->dsn, $this->usuario, $this->senha, [
+                $this->conn = new PDO($this->dsn, $this->usuario, $this->senha, [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+                    PDO::ATTR_EMULATE_PREPARES => false
                 ]);
             } catch (PDOException $e) {
-                throw new Exception("Erro na conexão com o banco: " . $e->getMessage());
+                throw new Exception("Erro de conexão: " . $e->getMessage());
             }
         }
     }
@@ -39,9 +39,9 @@ class MysqlSingleton{
 
         return self::$instance;
     }    public function executar($query, $param = array()){
-        if($this->conexao){
+        if($this->conn){
             try {
-                $sth = $this->conexao->prepare($query);
+                $sth = $this->conn->prepare($query);
                 foreach($param as $k => $v){
                     $sth->bindValue($k,$v);
                 }
@@ -54,5 +54,13 @@ class MysqlSingleton{
         } else {
             throw new Exception("Conexão com banco não estabelecida");
         }
+    }
+
+    public function getConnection() {
+        return $this->conn;
+    }
+
+    public function getLastInsertId() {
+        return $this->conn->lastInsertId();
     }
 }

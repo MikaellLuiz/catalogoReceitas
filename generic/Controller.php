@@ -8,78 +8,63 @@ class Controller
     public function __construct()
     {
         $this->rotas = new Rotas();
-    }    public function verificarChamadas($rota)
+    }
+
+    public function verificarChamadas($rota)
     {
-        // Processar parâmetros da URL
-        $this->processarParametrosUrl($rota);
-        
-        // Normalizar rota para compatibilidade
-        $rotaNormalizada = $this->normalizarRota($rota);
-        
-        $retorno = $this->rotas->executar($rotaNormalizada);
-          // Se existe um retorno irá devolver em formato json
-        if ($retorno) {
-            header("Content-Type: application/json; charset=utf-8");
-            $json = json_encode($retorno, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            echo $json;
-        } else {
-            // Retornar erro 404 se rota não encontrada
-            http_response_code(404);
-            $erro = [
-                'erro' => 'Endpoint não encontrado',
-                'rota' => $rota,
-                'metodo' => $_SERVER['REQUEST_METHOD']
-            ];
-            echo json_encode($erro, JSON_UNESCAPED_UNICODE);
-        }
+        $rotas = new Rotas();
+        return $rotas->executar($rota);
     }
     
-    private function processarParametrosUrl($rota)
+    protected function processarParametrosUrl()
     {
-        // Extrair ID da URL para operações específicas
-        // Exemplo: receita/123 -> define $_GET['id'] = 123
-        $partes = explode('/', $rota);
-        
-        if (count($partes) >= 2) {
-            $recurso = $partes[0];
-            $parametro = $partes[1];
-            
-            // Se o segundo parâmetro é numérico, é um ID
-            if (is_numeric($parametro)) {
-                $_GET['id'] = $parametro;
-                
-                // Para rotas com sub-recursos: receita/123/ingredientes
-                if (count($partes) >= 3) {
-                    $subrecurso = $partes[2];
-                    
-                    // Se existe um quarto parâmetro e é numérico
-                    if (count($partes) >= 4 && is_numeric($partes[3])) {
-                        $_GET['ingrediente_id'] = $partes[3];
-                    }
-                }
-            }
-            // Para rotas como receita/ingredientes
-            elseif ($parametro === 'ingredientes') {
-                // Se existe um ID antes de ingredientes: receita/123/ingredientes
-                if (count($partes) >= 3) {
-                    $_GET['receita_id'] = $partes[0] === 'receita' ? $partes[1] : null;
-                }
-            }
-        }
+        $url = $_SERVER['REQUEST_URI'];
+        $partes = explode('/', trim($url, '/'));
+        return array_slice($partes, 1);
     }
     
-    private function normalizarRota($rota)
+    protected function normalizarRota($rota)
     {
-        $partes = explode('/', $rota);
+        return strtolower($rota);
+    }
+
+    protected function getParametro($nome) {
+        $parametros = $this->processarParametrosUrl();
         
-        // Remover IDs numéricos da rota para matching
-        $rotaLimpa = [];
-        foreach ($partes as $parte) {
-            if (!is_numeric($parte)) {
-                $rotaLimpa[] = $parte;
+        // Se o nome for 'id', procura o último número na URL
+        if ($nome === 'id') {
+            foreach (array_reverse($parametros) as $param) {
+                if (is_numeric($param)) {
+                    return $param;
+                }
             }
+            return null;
         }
         
-        return implode('/', $rotaLimpa);
+        // Para outros parâmetros, procura pelo padrão nome/valor
+        $indice = array_search($nome, $parametros);
+        if ($indice !== false && isset($parametros[$indice + 1])) {
+            return $parametros[$indice + 1];
+        }
+        
+        return null;
+    }
+
+    protected function getJsonInput() {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("JSON inválido");
+        }
+        
+        return $data;
+    }
+
+    protected function jsonResponse($data, $statusCode = 200) {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
     }
 }

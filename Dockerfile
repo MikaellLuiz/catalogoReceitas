@@ -8,13 +8,21 @@ RUN docker-php-ext-install pdo pdo_mysql mysqli
 RUN apt-get update && apt-get install -y \
     curl \
     nano \
+    git \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Configurar diretório de trabalho
 WORKDIR /var/www/html
 
 # Copiar arquivos da aplicação
 COPY . /var/www/html/
+
+# Instalar dependências do Composer
+RUN composer install --no-interaction --no-dev --optimize-autoloader
 
 # Configurar permissões
 RUN chown -R www-data:www-data /var/www/html \

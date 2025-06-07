@@ -1,7 +1,9 @@
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
 include "generic/Autoload.php";
 
 use generic\Controller;
+use generic\JWTManager;
 
 // Configurar headers para API REST
 header('Content-Type: application/json; charset=utf-8');
@@ -29,10 +31,36 @@ if (isset($_SERVER['REQUEST_URI'])) {
     }
 }
 
+// Lista de rotas que não precisam de autenticação
+$publicRoutes = ['login', ''];
+
+// Verificar autenticação para rotas protegidas
+if (!in_array($route, $publicRoutes)) {
+    try {
+        $token = JWTManager::getTokenFromHeader();
+        JWTManager::validateToken($token);
+    } catch (\Exception $e) {
+        http_response_code(401);
+        echo json_encode([
+            'error' => true,
+            'message' => 'Acesso não autorizado: ' . $e->getMessage()
+        ]);
+        exit();
+    }
+}
+
 // Processar a rota se existe
 if (!empty($route)) {
-    $controller = new Controller();
-    $controller->verificarChamadas($route);
+    try {
+        $controller = new Controller();
+        $controller->verificarChamadas($route);
+    } catch (\Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'error' => true,
+            'message' => 'Erro interno do servidor: ' . $e->getMessage()
+        ]);
+    }
 } else {
     // Retornar informações da API quando acessar a raiz
     $response = [
@@ -41,6 +69,7 @@ if (!empty($route)) {
         'description' => 'API RESTful para gerenciamento de receitas e ingredientes',
         'format' => 'Esta API aceita apenas URLs no formato RESTful',
         'endpoints' => [
+            'POST /login' => 'Autenticar usuário e obter token JWT',
             'GET /receita' => 'Listar todas as receitas',
             'GET /receita/{id}' => 'Obter receita específica',
             'POST /receita' => 'Criar nova receita',
@@ -56,6 +85,7 @@ if (!empty($route)) {
             'DELETE /receita/{id}/ingredientes/{ingrediente_id}' => 'Remover ingrediente da receita'
         ],
         'examples' => [
+            'POST /login - Autenticar e obter token',
             'GET /receita - Lista todas as receitas',
             'GET /receita/1 - Obtém a receita com ID 1',
             'POST /receita - Cria uma nova receita',

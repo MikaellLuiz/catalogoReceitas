@@ -9,7 +9,8 @@ class ReceitaService extends ReceitaDAO {
 
     public function listarReceitas() {
         return parent::listar();
-    }    public function inserir($titulo, $descricao, $dificuldade, $tempo_preparo) {
+    }
+    public function inserir($titulo, $descricao, $dificuldade, $tempo_preparo) {
         if (!$this->validarDificuldade($dificuldade)) {
             return "Erro: Dificuldade deve ser 'Fácil', 'Média' ou 'Difícil'. Recebido: '" . $dificuldade . "'";
         }

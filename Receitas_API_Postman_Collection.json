@@ -8,6 +8,278 @@
 	},
 	"item": [
 		{
+			"name": "🔐 AUTENTICAÇÃO",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    console.log('Token salvo com sucesso!');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@email.com\",\n    \"senha\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "👥 USUÁRIOS",
+			"item": [
+				{
+					"name": "Listar usuários",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData).to.have.property('usuarios');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/usuario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar usuário por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData).to.have.property('usuario');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/usuario/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuario",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar novo usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData).to.have.property('usuario');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Novo Usuário\",\n    \"email\": \"novo@email.com\",\n    \"senha\": \"senha123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData).to.have.property('usuario');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Usuário Atualizado\",\n    \"email\": \"atualizado@email.com\",\n    \"senha\": \"novasenha123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuario/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuario",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/usuario/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuario",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "📋 Informações da API",
 			"request": {
 				"method": "GET",
@@ -28,7 +300,12 @@
 					"name": "Listar todas as receitas",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/receita",
 							"host": [
@@ -45,7 +322,12 @@
 					"name": "Obter receita específica",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/receita/1",
 							"host": [
@@ -64,6 +346,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
 							{
 								"key": "Content-Type",
 								"value": "application/json"
@@ -91,6 +377,10 @@
 						"method": "PUT",
 						"header": [
 							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/json"
 							}
@@ -116,7 +406,12 @@
 					"name": "Excluir receita",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/receita/1",
 							"host": [
@@ -139,7 +434,12 @@
 					"name": "Listar todos os ingredientes",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/ingrediente",
 							"host": [
@@ -156,7 +456,12 @@
 					"name": "Obter ingrediente específico",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/ingrediente/1",
 							"host": [
@@ -175,6 +480,10 @@
 					"request": {
 						"method": "POST",
 						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
 							{
 								"key": "Content-Type",
 								"value": "application/json"
@@ -202,6 +511,10 @@
 						"method": "PUT",
 						"header": [
 							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/json"
 							}
@@ -227,7 +540,12 @@
 					"name": "Excluir ingrediente",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/ingrediente/1",
 							"host": [
@@ -250,7 +568,12 @@
 					"name": "Listar ingredientes de uma receita",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/receita/1/ingredientes",
 							"host": [
@@ -271,13 +594,17 @@
 						"method": "POST",
 						"header": [
 							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"ingrediente_id\": 2\n}"
+							"raw": "{\n    \"ingrediente_id\": 1,\n    \"quantidade\": \"2 unidades\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/receita/1/ingredientes",
@@ -297,9 +624,14 @@
 					"name": "Remover ingrediente da receita",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/receita/1/ingredientes/2",
+							"raw": "{{baseUrl}}/receita/1/ingredientes/1",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -307,7 +639,7 @@
 								"receita",
 								"1",
 								"ingredientes",
-								"2"
+								"1"
 							]
 						}
 					},
