@@ -3,32 +3,56 @@ namespace controller;
 
 use service\IngredienteService;
 
+use Exception;
+
 class Ingrediente {    public function listar() {
-        $service = new IngredienteService();
-        
-        // Se há ID na URL, buscar ingrediente específico
-        if (isset($_GET['id'])) {
-            $resultado = $service->listarId($_GET['id']);
-        } else {
-            $resultado = $service->listarIngredientes();
+        try {
+            $service = new IngredienteService();
+            
+            // Se há ID na URL, buscar ingrediente específico
+            if (isset($_GET['id'])) {
+                $resultado = $service->listarId($_GET['id']);
+            } else {
+                $resultado = $service->listarIngredientes();
+            }
+            
+            return $resultado;
+        } catch (Exception $e) {
+            http_response_code(500);
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        
-        return $resultado;
     }
 
     public function inserir() {
-        $service = new IngredienteService();
-        
-        // Obter dados do corpo da requisição
-        $dados = $this->obterDadosRequisicao();
-        $nome = $dados['nome'] ?? '';
-        
-        if (empty($nome)) {
-            return ['erro' => 'Nome do ingrediente é obrigatório'];
+        try {
+            $service = new IngredienteService();
+            
+            // Obter dados do corpo da requisição
+            $dados = $this->obterDadosRequisicao();
+            $nome = $dados['nome'] ?? '';
+            
+            if (empty($nome)) {
+                return [
+                    'erro' => 'Nome do ingrediente é obrigatório',
+                    'codigo' => 400,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            $resultado = $service->inserir($nome);
+            return $resultado;
+        } catch (Exception $e) {
+            http_response_code(500);
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        
-        $resultado = $service->inserir($nome);
-        return $resultado;
     }
 
     public function alterar() {

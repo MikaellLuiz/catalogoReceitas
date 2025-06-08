@@ -24,33 +24,8 @@ class Acao
         $end = $this->endpointMetodo();
        
         if ($end) {
-            $reflectMetodo = new ReflectionMethod($end->classe, $end->execucao);
-            $parametros = $reflectMetodo->getParameters();
-            
-            // Para métodos POST, PUT, DELETE, deixa o controller processar os dados
-            $metodo = $_SERVER["REQUEST_METHOD"];
-            if (in_array($metodo, ['POST', 'PUT', 'DELETE']) || empty($parametros)) {
-                return $reflectMetodo->invoke(new $end->classe());
-            }
-            
-            // Para métodos GET com parâmetros, usa o processamento automático
-            $returnParam = $this->getParam();
-            $para = [];
-            
-            foreach($parametros as $v) {
-                $name = $v->getName();
-                
-                if (!isset($returnParam[$name]) && !$v->isOptional()) {
-                    return [
-                        'erro' => "Parâmetro obrigatório '$name' não fornecido",
-                        'parametros_esperados' => array_map(function($p) { return $p->getName(); }, $parametros)
-                    ];
-                }
-                
-                $para[$name] = $returnParam[$name] ?? ($v->isOptional() ? $v->getDefaultValue() : null);
-            }
-
-            return $reflectMetodo->invokeArgs(new $end->classe(), $para);
+            // Usar o novo método executar do Endpoint que verifica autenticação
+            return $end->executar();
         }
         
         return null;

@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-		"name": "API Receitas Apocalípticas",
-		"description": "Collection completa para testar a API de Receitas Apocalípticas com todos os endpoints CRUD para receitas, ingredientes e relacionamentos.",
+		"name": "API Receitas Apocalípticas - Completa",
+		"description": "Collection completa para testar automaticamente todos os endpoints da API de Receitas com autenticação JWT e validações.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12345678"
 	},
@@ -19,16 +19,187 @@
 					]
 				}
 			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"API responde corretamente\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Resposta contém informações da API\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('dados');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"response": []
 		},
 		{
-			"name": "🍽️ RECEITAS",
+			"name": "🔐 AUTENTICAÇÃO",
 			"item": [
 				{
-					"name": "Listar todas as receitas",
+					"name": "Login Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@teste.com\",\n    \"senha\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Login bem-sucedido\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Token JWT recebido\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.dados).to.have.property('token');",
+									"    pm.expect(jsonData.dados.token).to.be.a('string');",
+									"    pm.environment.set('authToken', jsonData.dados.token);",
+									"});",
+									"",
+									"pm.test(\"Dados do usuário presentes\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.dados).to.have.property('usuario');",
+									"    pm.expect(jsonData.dados.usuario).to.have.property('email');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Registrar Usuário",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"teste{{$timestamp}}@teste.com\",\n    \"senha\": \"123456\",\n    \"nome\": \"Usuário Teste\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/registrar",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"registrar"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Registro bem-sucedido\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Resposta de sucesso\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Validar Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{authToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/validarToken",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"validarToken"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Token válido\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Token validado corretamente\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.dados).to.have.property('valido');",
+									"    pm.expect(jsonData.dados.valido).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🍽️ RECEITAS",
+			"item": [				{
+					"name": "Listar receitas",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/receita",
 							"host": [
@@ -39,24 +210,68 @@
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Lista receitas com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Retorna array de receitas\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.dados).to.be.an('array');",
+									"    if (jsonData.dados.length > 0) {",
+									"        pm.environment.set('receitaId', jsonData.dados[0].id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
-				},
-				{
-					"name": "Obter receita específica",
+				},				{
+					"name": "Buscar receita específica",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/receita/1",
+							"raw": "{{baseUrl}}/receita/{{receitaId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"receita",
-								"1"
+								"{{receitaId}}"
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Busca receita com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Receita contém dados obrigatórios\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.dados).to.have.property('nome');",
+									"    pm.expect(jsonData.dados).to.have.property('tempo_preparo');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
 				},
 				{
@@ -67,11 +282,14 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
 							}
-						],
-						"body": {
+						],						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"titulo\": \"Sopa de Sobrevivência\",\n    \"descricao\": \"Uma sopa nutritiva para tempos difíceis, feita com ingredientes não perecíveis\",\n    \"dificuldade\": \"Fácil\",\n    \"tempo_preparo\": 30\n}"
+							"raw": "{\n    \"nome\": \"Receita Teste {{$timestamp}}\",\n    \"descricao\": \"Receita criada durante teste automatizado\",\n    \"modo_preparo\": \"Instruções de preparo da receita\",\n    \"tempo_preparo\": 30,\n    \"porcoes\": 4\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/receita",
@@ -83,6 +301,26 @@
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Receita criada com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"ID da receita retornado\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.dados && jsonData.dados.id) {",
+									"        pm.environment.set('novaReceitaId', jsonData.dados.id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
 				},
 				{
@@ -93,53 +331,60 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
 							}
-						],
-						"body": {
+						],						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"titulo\": \"Sopa do Apocalipse Atualizada\",\n    \"descricao\": \"Descrição atualizada da receita com mais detalhes\",\n    \"dificuldade\": \"Média\",\n    \"tempo_preparo\": 45\n}"
+							"raw": "{\n    \"nome\": \"Receita Atualizada {{$timestamp}}\",\n    \"descricao\": \"Receita atualizada durante teste\",\n    \"modo_preparo\": \"Instruções atualizadas\",\n    \"tempo_preparo\": 45,\n    \"porcoes\": 6\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/receita/1",
+							"raw": "{{baseUrl}}/receita/{{novaReceitaId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"receita",
-								"1"
+								"{{novaReceitaId}}"
 							]
 						}
 					},
-					"response": []
-				},
-				{
-					"name": "Excluir receita",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/receita/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"receita",
-								"1"
-							]
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Receita atualizada com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Confirmação de atualização\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					},
+					],
 					"response": []
 				}
 			]
 		},
 		{
 			"name": "🥕 INGREDIENTES",
-			"item": [
-				{
-					"name": "Listar todos os ingredientes",
+			"item": [				{
+					"name": "Listar ingredientes",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/ingrediente",
 							"host": [
@@ -150,24 +395,67 @@
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Lista ingredientes com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Retorna array de ingredientes\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.dados).to.be.an('array');",
+									"    if (jsonData.dados.length > 0) {",
+									"        pm.environment.set('ingredienteId', jsonData.dados[0].id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
-				},
-				{
-					"name": "Obter ingrediente específico",
+				},				{
+					"name": "Buscar ingrediente específico",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/ingrediente/1",
+							"raw": "{{baseUrl}}/ingrediente/{{ingredienteId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"ingrediente",
-								"1"
+								"{{ingredienteId}}"
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Busca ingrediente com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Ingrediente contém dados obrigatórios\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.dados).to.have.property('nome');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
 				},
 				{
@@ -178,11 +466,14 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
 							}
-						],
-						"body": {
+						],						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nome\": \"Cebola Desidratada\"\n}"
+							"raw": "{\n    \"nome\": \"Ingrediente Teste {{$timestamp}}\",\n    \"unidade_medida\": \"g\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/ingrediente",
@@ -194,6 +485,26 @@
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ingrediente criado com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"ID do ingrediente retornado\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.dados && jsonData.dados.id) {",
+									"        pm.environment.set('novoIngredienteId', jsonData.dados.id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
 				},
 				{
@@ -204,65 +515,91 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
 							}
-						],
-						"body": {
+						],						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nome\": \"Cebola Fresca\"\n}"
+							"raw": "{\n    \"nome\": \"Ingrediente Atualizado {{$timestamp}}\",\n    \"unidade_medida\": \"kg\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/ingrediente/1",
+							"raw": "{{baseUrl}}/ingrediente/{{novoIngredienteId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"ingrediente",
-								"1"
+								"{{novoIngredienteId}}"
 							]
 						}
 					},
-					"response": []
-				},
-				{
-					"name": "Excluir ingrediente",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/ingrediente/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"ingrediente",
-								"1"
-							]
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ingrediente atualizado com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Confirmação de atualização\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					},
+					],
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "🔗 RECEITA-INGREDIENTE",
+			"name": "🔗 RELACIONAMENTOS",
 			"item": [
 				{
-					"name": "Listar ingredientes de uma receita",
+					"name": "Listar ingredientes da receita",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/receita/1/ingredientes",
+							"raw": "{{baseUrl}}/receita/{{receitaId}}/ingredientes",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"receita",
-								"1",
+								"{{receitaId}}",
 								"ingredientes"
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Lista ingredientes da receita\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Retorna array de ingredientes\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.dados).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
 				},
 				{
@@ -273,44 +610,46 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"ingrediente_id\": 2\n}"
+							"raw": "{\n    \"ingrediente_id\": \"{{ingredienteId}}\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/receita/1/ingredientes",
+							"raw": "{{baseUrl}}/receita/{{novaReceitaId}}/ingredientes",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"receita",
-								"1",
+								"{{novaReceitaId}}",
 								"ingredientes"
 							]
 						}
 					},
-					"response": []
-				},
-				{
-					"name": "Remover ingrediente da receita",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/receita/1/ingredientes/2",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"receita",
-								"1",
-								"ingredientes",
-								"2"
-							]
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ingrediente adicionado à receita\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Confirmação de relacionamento\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					},
+					],
 					"response": []
 				}
 			]
@@ -319,7 +658,7 @@
 			"name": "🧪 TESTES DE VALIDAÇÃO",
 			"item": [
 				{
-					"name": "❌ Criar receita com dificuldade inválida",
+					"name": "Teste - Login inválido",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -330,192 +669,292 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"titulo\": \"Receita Teste\",\n    \"descricao\": \"Teste de validação\",\n    \"dificuldade\": \"Impossível\",\n    \"tempo_preparo\": 30\n}"
+							"raw": "{\n    \"email\": \"invalido@teste.com\",\n    \"senha\": \"senhaerrada\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/receita",
+							"raw": "{{baseUrl}}/auth/login",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"receita"
+								"auth",
+								"login"
 							]
 						}
 					},
-					"response": []
-				},
-				{
-					"name": "❌ Criar receita com tempo inválido",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Login inválido retorna erro\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Erro de credenciais inválidas\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.not.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
 							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"titulo\": \"Receita Teste\",\n    \"descricao\": \"Teste de validação\",\n    \"dificuldade\": \"Fácil\",\n    \"tempo_preparo\": -10\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/receita",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"receita"
-							]
 						}
-					},
+					],
 					"response": []
-				},
-				{
-					"name": "❌ Criar ingrediente sem nome",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"nome\": \"\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/ingrediente",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"ingrediente"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "❌ Buscar receita inexistente",
+				},				{
+					"name": "Teste - Acesso sem token",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/receita/999",
+							"raw": "{{baseUrl}}/receita",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Acesso negado sem token\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Erro de autorização\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.not.be.null;",
+									"    pm.expect(jsonData.erro.codigo).to.equal(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"response": []
+				},				{
+					"name": "Teste - Receita inexistente",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/receita/99999",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"receita",
-								"999"
+								"99999"
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Receita inexistente retorna 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Erro de recurso não encontrado\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.not.be.null;",
+									"    pm.expect(jsonData.erro.codigo).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Teste - Receita com dados inválidos",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"\",\n    \"tempo_preparo\": -10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receita",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receita"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Dados inválidos retornam erro\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Erro de validação\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.not.be.null;",
+									"    pm.expect(jsonData.erro.codigo).to.equal(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Teste - Email já cadastrado",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@teste.com\",\n    \"senha\": \"123456\",\n    \"nome\": \"Teste Duplicado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/registrar",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"registrar"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Email duplicado retorna erro\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test(\"Erro de conflito\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.not.be.null;",
+									"    pm.expect(jsonData.erro.codigo).to.equal(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "🚀 WORKFLOW COMPLETO",
-			"item": [
-				{
-					"name": "1️⃣ Criar ingrediente base",
+			"name": "🗑️ LIMPEZA (Opcional)",
+			"item": [				{
+					"name": "Deletar receita criada no teste",
 					"request": {
-						"method": "POST",
+						"method": "DELETE",
 						"header": [
 							{
-								"key": "Content-Type",
-								"value": "application/json"
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"nome\": \"Tomate Enlatado\"\n}"
-						},
 						"url": {
-							"raw": "{{baseUrl}}/ingrediente",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"ingrediente"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "2️⃣ Criar receita completa",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"titulo\": \"Pasta do Sobrevivente\",\n    \"descricao\": \"Pasta rápida e nutritiva para momentos de emergência. Feita com ingredientes de longa duração.\",\n    \"dificuldade\": \"Fácil\",\n    \"tempo_preparo\": 15\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/receita",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"receita"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "3️⃣ Vincular ingrediente à receita",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"ingrediente_id\": 13\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/receita/5/ingredientes",
+							"raw": "{{baseUrl}}/receita/{{novaReceitaId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"receita",
-								"5",
-								"ingredientes"
+								"{{novaReceitaId}}"
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Receita deletada com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Confirmação de deleção\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
-				},
-				{
-					"name": "4️⃣ Verificar receita com ingredientes",
+				},				{
+					"name": "Deletar ingrediente criado no teste",
 					"request": {
-						"method": "GET",
-						"header": [],
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/receita/5/ingredientes",
+							"raw": "{{baseUrl}}/ingrediente/{{novoIngredienteId}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"receita",
-								"5",
-								"ingredientes"
+								"ingrediente",
+								"{{novoIngredienteId}}"
 							]
 						}
 					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ingrediente deletado com sucesso\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Confirmação de deleção\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.erro).to.be.null;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"response": []
 				}
 			]
@@ -527,7 +966,8 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// Scripts que executam antes de cada requisição",
+					"// Pode ser usado para configurações globais"
 				]
 			}
 		},
@@ -536,7 +976,8 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// Scripts que executam após cada requisição",
+					"// Pode ser usado para testes globais"
 				]
 			}
 		}
@@ -545,6 +986,31 @@
 		{
 			"key": "baseUrl",
 			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "receitaId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "ingredienteId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "novaReceitaId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "novoIngredienteId",
+			"value": "",
 			"type": "string"
 		}
 	]

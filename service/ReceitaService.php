@@ -3,69 +3,199 @@ namespace service;
 
 use dao\mysql\ReceitaDAO;
 
+use Exception;
+
 class ReceitaService extends ReceitaDAO {
     
-    private $dificuldadesValidas = ['Fácil', 'Média', 'Difícil'];
+    private $dificuldadesValidas = ['Fácil', 'Média', 'Difícil'];    public function listarReceitas() {
+        try {
+            return parent::listar();
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro ao buscar receitas',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+        }
+    }
 
-    public function listarReceitas() {
-        return parent::listar();
-    }    public function inserir($titulo, $descricao, $dificuldade, $tempo_preparo) {
-        if (!$this->validarDificuldade($dificuldade)) {
-            return "Erro: Dificuldade deve ser 'Fácil', 'Média' ou 'Difícil'. Recebido: '" . $dificuldade . "'";
-        }
-        
-        if (!$this->validarTempoPreparo($tempo_preparo)) {
-            return "Erro: Tempo de preparo deve ser um número positivo";
-        }
+    public function inserir($titulo, $descricao, $dificuldade, $tempo_preparo) {
+        try {
+            if (!$this->validarDificuldade($dificuldade)) {
+                return [
+                    'erro' => "Dificuldade deve ser 'Fácil', 'Média' ou 'Difícil'. Recebido: '" . $dificuldade . "'",
+                    'codigo' => 400,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            if (!$this->validarTempoPreparo($tempo_preparo)) {
+                return [
+                    'erro' => 'Tempo de preparo deve ser um número positivo',
+                    'codigo' => 400,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
 
-        if (parent::inserir($titulo, $descricao, $dificuldade, $tempo_preparo)) {
-            return "Receita salva com sucesso!";
+            if (parent::inserir($titulo, $descricao, $dificuldade, $tempo_preparo)) {
+                return [
+                    'sucesso' => true,
+                    'mensagem' => 'Receita salva com sucesso!',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            return [
+                'erro' => 'Erro ao salvar receita',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        return "Erro ao salvar receita";
     }
 
     public function alterar($id, $titulo, $descricao, $dificuldade, $tempo_preparo) {
-        if (!$this->validarDificuldade($dificuldade)) {
-            return "Erro: Dificuldade deve ser 'Fácil', 'Média' ou 'Difícil'";
-        }
-        
-        if (!$this->validarTempoPreparo($tempo_preparo)) {
-            return "Erro: Tempo de preparo deve ser um número positivo";
-        }
+        try {
+            if (!$this->validarDificuldade($dificuldade)) {
+                return [
+                    'erro' => "Dificuldade deve ser 'Fácil', 'Média' ou 'Difícil'",
+                    'codigo' => 400,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            if (!$this->validarTempoPreparo($tempo_preparo)) {
+                return [
+                    'erro' => 'Tempo de preparo deve ser um número positivo',
+                    'codigo' => 400,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
 
-        if (parent::alterar($id, $titulo, $descricao, $dificuldade, $tempo_preparo)) {
-            return "Receita alterada com sucesso!";
+            if (parent::alterar($id, $titulo, $descricao, $dificuldade, $tempo_preparo)) {
+                return [
+                    'sucesso' => true,
+                    'mensagem' => 'Receita alterada com sucesso!',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            return [
+                'erro' => 'Erro ao alterar receita',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        return "Erro ao alterar receita";
     }
 
     public function excluir($id) {
-        if (parent::excluir($id)) {
-            return "Receita excluída com sucesso!";
+        try {
+            if (parent::excluir($id)) {
+                return [
+                    'sucesso' => true,
+                    'mensagem' => 'Receita excluída com sucesso!',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            return [
+                'erro' => 'Erro ao excluir receita',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        return "Erro ao excluir receita";
     }
 
     public function listarId($id) {
-        return parent::listarId($id);
-    }
-
-    public function adicionarIngrediente($receita_id, $ingrediente_id) {
-        if (parent::inserirReceitaIngrediente($receita_id, $ingrediente_id)) {
-            return "Ingrediente adicionado à receita com sucesso!";
+        try {
+            return parent::listarId($id);
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro ao buscar receita',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        return "Erro ao adicionar ingrediente à receita";
+    }    public function adicionarIngrediente($receita_id, $ingrediente_id) {
+        try {
+            if (parent::inserirReceitaIngrediente($receita_id, $ingrediente_id)) {
+                return [
+                    'sucesso' => true,
+                    'mensagem' => 'Ingrediente adicionado à receita com sucesso!',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            return [
+                'erro' => 'Erro ao adicionar ingrediente à receita',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+        }
     }
 
     public function removerIngrediente($receita_id, $ingrediente_id) {
-        if (parent::removerReceitaIngrediente($receita_id, $ingrediente_id)) {
-            return "Ingrediente removido da receita com sucesso!";
+        try {
+            if (parent::removerReceitaIngrediente($receita_id, $ingrediente_id)) {
+                return [
+                    'sucesso' => true,
+                    'mensagem' => 'Ingrediente removido da receita com sucesso!',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            return [
+                'erro' => 'Erro ao remover ingrediente da receita',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        return "Erro ao remover ingrediente da receita";
     }
 
     public function listarIngredientesPorReceita($receita_id) {
-        return parent::listarIngredientesPorReceita($receita_id);
+        try {
+            return parent::listarIngredientesPorReceita($receita_id);
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro ao buscar ingredientes da receita',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+        }
     }
 
     private function validarDificuldade($dificuldade) {

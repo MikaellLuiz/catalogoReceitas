@@ -8,27 +8,40 @@ class Rotas
     {
         // Rotas da API REST - URLs amigáveis
         $this->endpoints = [
-            // Endpoints de Receita - CRUD completo
+            // Endpoints de Autenticação - Públicos (sem autenticação)
+            "auth/login" => new Acao([
+                Acao::POST => new Endpoint("Auth", "login")
+            ]),
+            
+            "auth/registrar" => new Acao([
+                Acao::POST => new Endpoint("Auth", "registrar")
+            ]),
+            
+            "auth/validar" => new Acao([
+                Acao::POST => new Endpoint("Auth", "validarToken")
+            ]),
+            
+            // Endpoints de Receita - CRUD completo (PROTEGIDOS)
             "receita" => new Acao([
-                Acao::GET => new Endpoint("Receita", "listar"),
-                Acao::POST => new Endpoint("Receita", "inserir"),
-                Acao::PUT => new Endpoint("Receita", "alterar"),
-                Acao::DELETE => new Endpoint("Receita", "excluir")
+                Acao::GET => new Endpoint("Receita", "listar", true),
+                Acao::POST => new Endpoint("Receita", "inserir", true),
+                Acao::PUT => new Endpoint("Receita", "alterar", true),
+                Acao::DELETE => new Endpoint("Receita", "excluir", true)
             ]),
             
-            // Endpoints específicos de Receita com ingredientes
+            // Endpoints específicos de Receita com ingredientes (PROTEGIDOS)
             "receita/ingredientes" => new Acao([
-                Acao::GET => new Endpoint("Receita", "listarIngredientes"),
-                Acao::POST => new Endpoint("Receita", "adicionarIngrediente"),
-                Acao::DELETE => new Endpoint("Receita", "removerIngrediente")
+                Acao::GET => new Endpoint("Receita", "listarIngredientes", true),
+                Acao::POST => new Endpoint("Receita", "adicionarIngrediente", true),
+                Acao::DELETE => new Endpoint("Receita", "removerIngrediente", true)
             ]),
             
-            // Endpoints de Ingrediente - CRUD completo
+            // Endpoints de Ingrediente - CRUD completo (PROTEGIDOS)
             "ingrediente" => new Acao([
-                Acao::GET => new Endpoint("Ingrediente", "listar"),
-                Acao::POST => new Endpoint("Ingrediente", "inserir"),
-                Acao::PUT => new Endpoint("Ingrediente", "alterar"),
-                Acao::DELETE => new Endpoint("Ingrediente", "excluir")
+                Acao::GET => new Endpoint("Ingrediente", "listar", true),
+                Acao::POST => new Endpoint("Ingrediente", "inserir", true),
+                Acao::PUT => new Endpoint("Ingrediente", "alterar", true),
+                Acao::DELETE => new Endpoint("Ingrediente", "excluir", true)
             ])
         ];
     }

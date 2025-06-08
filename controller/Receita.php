@@ -3,37 +3,54 @@ namespace controller;
 
 use service\ReceitaService;
 
+use Exception;
+
 class Receita {
     
     public function __construct() {
     }  
-      
-    public function listar() {
-        $service = new ReceitaService();
-        
-        // Se há ID na URL, buscar receita específica
-        if (isset($_GET['id'])) {
-            $resultado = $service->listarId($_GET['id']);
-        } else {
-            $resultado = $service->listarReceitas();
+        public function listar() {
+        try {
+            $service = new ReceitaService();
+            
+            // Se há ID na URL, buscar receita específica
+            if (isset($_GET['id'])) {
+                $resultado = $service->listarId($_GET['id']);
+            } else {
+                $resultado = $service->listarReceitas();
+            }
+            
+            return $resultado;
+        } catch (Exception $e) {
+            http_response_code(500);
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        
-        return $resultado;
-    }   
-
-    public function inserir() {
-        $service = new ReceitaService();
-        
-        // Obter dados do corpo da requisição
-        $dados = $this->obterDadosRequisicao();
-        
-        $titulo = $dados['titulo'] ?? '';
-        $descricao = $dados['descricao'] ?? '';
-        $dificuldade = $dados['dificuldade'] ?? '';
-        $tempo_preparo = $dados['tempo_preparo'] ?? 0;
-        
-        $resultado = $service->inserir($titulo, $descricao, $dificuldade, $tempo_preparo);
-        return $resultado;
+    }    public function inserir() {
+        try {
+            $service = new ReceitaService();
+            
+            // Obter dados do corpo da requisição
+            $dados = $this->obterDadosRequisicao();
+            
+            $titulo = $dados['titulo'] ?? '';
+            $descricao = $dados['descricao'] ?? '';
+            $dificuldade = $dados['dificuldade'] ?? '';
+            $tempo_preparo = $dados['tempo_preparo'] ?? 0;
+            
+            $resultado = $service->inserir($titulo, $descricao, $dificuldade, $tempo_preparo);
+            return $resultado;
+        } catch (Exception $e) {
+            http_response_code(500);
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+        }
     }
 
     public function alterar() {

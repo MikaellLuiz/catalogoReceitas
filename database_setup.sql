@@ -27,6 +27,17 @@ CREATE TABLE ingredientes (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Tabela de usuários para autenticação
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    ativo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Tabela de relacionamento receita-ingrediente (many-to-many)
 CREATE TABLE receita_ingrediente (
     receita_id INT,
@@ -43,10 +54,12 @@ CREATE TABLE receita_ingrediente (
 DELETE FROM receita_ingrediente;
 DELETE FROM receitas;
 DELETE FROM ingredientes;
+DELETE FROM usuarios;
 
 -- Resetar AUTO_INCREMENT para começar do ID 1
 ALTER TABLE receitas AUTO_INCREMENT = 1;
 ALTER TABLE ingredientes AUTO_INCREMENT = 1;
+ALTER TABLE usuarios AUTO_INCREMENT = 1;
 
 -- Inserção de dados de exemplo
 INSERT INTO receitas (titulo, descricao, dificuldade, tempo_preparo) VALUES
@@ -89,6 +102,10 @@ INSERT INTO ingredientes (nome) VALUES
 ('Manteiga Derretida'),
 ('Queijo Grudento'),
 ('Presunto Suculento');
+
+INSERT INTO usuarios (email, senha, nome) VALUES
+('admin@teste.com', '$2y$10$HFfEQzaT1HOupwSmeMmobOjC7H7hELGk0b7lU2MQAniAiLn9Elhmm', 'Administrador'),
+('usuario@teste.com', '$2y$10$HFfEQzaT1HOupwSmeMmobOjC7H7hELGk0b7lU2MQAniAiLn9Elhmm', 'Usuário Comum');
 
 -- Relacionamentos de exemplo
 INSERT INTO receita_ingrediente (receita_id, ingrediente_id, quantidade) VALUES
@@ -147,6 +164,9 @@ SELECT id, titulo, dificuldade, tempo_preparo FROM receitas;
 
 SELECT 'Ingredientes criados:' as info;
 SELECT id, nome FROM ingredientes;
+
+SELECT 'Usuários criados:' as info;
+SELECT id, email, nome, ativo FROM usuarios;
 
 SELECT 'Relacionamentos criados:' as info;
 SELECT 

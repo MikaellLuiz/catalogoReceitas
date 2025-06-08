@@ -1,4 +1,7 @@
 <?php
+// Iniciar sessão para armazenar dados de autenticação
+session_start();
+
 include "generic/Autoload.php";
 
 use generic\Controller;
@@ -37,30 +40,54 @@ if (!empty($route)) {
     // Retornar informações da API quando acessar a raiz
     $response = [
         'message' => 'API de Receitas - Catálogo do Apocalipse',
-        'version' => '2.0',
-        'description' => 'API RESTful para gerenciamento de receitas e ingredientes',
+        'version' => '3.0',
+        'description' => 'API RESTful para gerenciamento de receitas e ingredientes com autenticação JWT',
         'format' => 'Esta API aceita apenas URLs no formato RESTful',
+        'authentication' => [
+            'type' => 'JWT Bearer Token',
+            'header' => 'Authorization: Bearer {token}',
+            'public_endpoints' => ['POST /auth/login', 'POST /auth/registrar'],
+            'protected_endpoints' => 'Todos os demais endpoints requerem autenticação'
+        ],
         'endpoints' => [
+            // Autenticação (Públicos)
+            'POST /auth/login' => 'Fazer login e obter token JWT',
+            'POST /auth/registrar' => 'Registrar novo usuário',
+            'POST /auth/validar' => 'Validar token JWT',
+            
+            // Receitas (Protegidos - Requer token)
             'GET /receita' => 'Listar todas as receitas',
             'GET /receita/{id}' => 'Obter receita específica',
             'POST /receita' => 'Criar nova receita',
             'PUT /receita/{id}' => 'Atualizar receita',
             'DELETE /receita/{id}' => 'Excluir receita',
+            
+            // Ingredientes (Protegidos - Requer token)
             'GET /ingrediente' => 'Listar todos os ingredientes',
             'GET /ingrediente/{id}' => 'Obter ingrediente específico',
             'POST /ingrediente' => 'Criar novo ingrediente',
             'PUT /ingrediente/{id}' => 'Atualizar ingrediente',
             'DELETE /ingrediente/{id}' => 'Excluir ingrediente',
+            
+            // Receita-Ingredientes (Protegidos - Requer token)
             'GET /receita/{id}/ingredientes' => 'Listar ingredientes de uma receita',
             'POST /receita/{id}/ingredientes' => 'Adicionar ingrediente à receita',
             'DELETE /receita/{id}/ingredientes/{ingrediente_id}' => 'Remover ingrediente da receita'
         ],
         'examples' => [
-            'GET /receita - Lista todas as receitas',
-            'GET /receita/1 - Obtém a receita com ID 1',
-            'POST /receita - Cria uma nova receita',
-            'PUT /receita/1 - Atualiza a receita com ID 1',
-            'DELETE /receita/1 - Exclui a receita com ID 1'
+            'Login' => 'POST /auth/login com {"email": "admin@exemplo.com", "senha": "password"}',
+            'Usar token' => 'Header: Authorization: Bearer {token_recebido_no_login}',
+            'GET /receita - Lista todas as receitas (requer token)',
+            'GET /receita/1 - Obtém a receita com ID 1 (requer token)',
+            'POST /receita - Cria uma nova receita (requer token)',
+            'PUT /receita/1 - Atualiza a receita com ID 1 (requer token)',
+            'DELETE /receita/1 - Exclui a receita com ID 1 (requer token)'
+        ],
+        'error_handling' => [
+            'format' => 'Todos os erros retornam JSON com "erro", "codigo" e "timestamp"',
+            '401' => 'Acesso não autorizado - Token inválido ou não fornecido',
+            '400' => 'Dados inválidos',
+            '500' => 'Erro interno do servidor'
         ],
         'base_url' => 'http://localhost:8080'
     ];

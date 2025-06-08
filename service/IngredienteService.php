@@ -3,42 +3,122 @@ namespace service;
 
 use dao\mysql\IngredienteDAO;
 
+use Exception;
+
 class IngredienteService extends IngredienteDAO {
     
     public function listarIngredientes() {
-        return parent::listar();
+        try {
+            return parent::listar();
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro ao buscar ingredientes',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+        }
     }
 
     public function inserir($nome) {
-        if (empty(trim($nome))) {
-            return "Erro: Nome do ingrediente não pode estar vazio";
-        }
+        try {
+            if (empty(trim($nome))) {
+                return [
+                    'erro' => 'Nome do ingrediente não pode estar vazio',
+                    'codigo' => 400,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
 
-        if (parent::inserir($nome)) {
-            return "Ingrediente salvo com sucesso!";
+            if (parent::inserir($nome)) {
+                return [
+                    'sucesso' => true,
+                    'mensagem' => 'Ingrediente salvo com sucesso!',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            return [
+                'erro' => 'Erro ao salvar ingrediente',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        return "Erro ao salvar ingrediente";
     }
 
     public function alterar($id, $nome) {
-        if (empty(trim($nome))) {
-            return "Erro: Nome do ingrediente não pode estar vazio";
-        }
+        try {
+            if (empty(trim($nome))) {
+                return [
+                    'erro' => 'Nome do ingrediente não pode estar vazio',
+                    'codigo' => 400,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
 
-        if (parent::alterar($id, $nome)) {
-            return "Ingrediente alterado com sucesso!";
+            if (parent::alterar($id, $nome)) {
+                return [
+                    'sucesso' => true,
+                    'mensagem' => 'Ingrediente alterado com sucesso!',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            return [
+                'erro' => 'Erro ao alterar ingrediente',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        return "Erro ao alterar ingrediente";
     }
 
     public function excluir($id) {
-        if (parent::excluir($id)) {
-            return "Ingrediente excluído com sucesso!";
+        try {
+            if (parent::excluir($id)) {
+                return [
+                    'sucesso' => true,
+                    'mensagem' => 'Ingrediente excluído com sucesso!',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            return [
+                'erro' => 'Erro ao excluir ingrediente',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro interno do servidor',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
         }
-        return "Erro ao excluir ingrediente";
     }
 
     public function listarId($id) {
-        return parent::listarId($id);
+        try {
+            return parent::listarId($id);
+        } catch (Exception $e) {
+            return [
+                'erro' => 'Erro ao buscar ingrediente',
+                'codigo' => 500,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+        }
     }
 }
